@@ -34,7 +34,7 @@ use AutoLoader qw(AUTOLOAD);
 	SSG_SERVICE_LOGOFF
 );
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 
 # Preloaded methods go here.
@@ -74,8 +74,6 @@ sub new {
 	$self->{DICTIONARY} = new Net::Radius::Dictionary($dictionary);
 
 	$self->{SOCKET} = &create_udp_handle($ssg_ip,$ssg_port);
-	$self->{PACKET} = new Net::Radius::Packet($self->{DICTIONARY});
-	$self->{PACKET}->set_authenticator('1234w6t890123a5c');
 
 	bless $self,$class;
 	return $self;
@@ -95,28 +93,27 @@ sub action {
 	my $action	= shift;
 	my $values	= shift;
 	my $data;
+
+	my $packet = new Net::Radius::Packet($self->{DICTIONARY});
+	$packet->set_authenticator('1234w6t890123a5c');
+
 	if ($action eq SSG_ACCOUNT_PING) {
-		&account_ping($self->packet,$values->{user_ip});
+		&account_ping($packet,$values->{user_ip});
 	} elsif ($action eq SSG_ACCOUNT_LOGON) {
-		&account_logon($self->packet,$values->{user_ip},$values->{user_id},$values->{password}, $self->{SECRET});
+		&account_logon($packet,$values->{user_ip},$values->{user_id},$values->{password}, $self->{SECRET});
 	} elsif ($action eq SSG_ACCOUNT_LOGOFF) {
-		&account_logoff($self->packet,$values->{user_ip},$values->{user_id});
+		&account_logoff($packet,$values->{user_ip},$values->{user_id});
 	} elsif ($action eq SSG_SERVICE_LOGON) {
-		&service($self->packet,$values->{user_ip},$values->{service}, SSG_SERVICE_LOGON);
+		&service($packet,$values->{user_ip},$values->{service}, SSG_SERVICE_LOGON);
 	} elsif ($action eq SSG_SERVICE_LOGOFF) {
-		&service($self->packet,$values->{user_ip},$values->{service}, SSG_SERVICE_LOGOFF);
+		&service($packet,$values->{user_ip},$values->{service}, SSG_SERVICE_LOGOFF);
 	} else {
 		die ("Unknown action");
 	}
-	&send_packet($self->{SOCKET},$self->packet);
+	&send_packet($self->{SOCKET},$packet);
 	my $reply = &receive_reply($self->{SOCKET}, $values->{timeout});
 	my $rp = new Net::Radius::Packet $self->{DICTIONARY}, $reply;
 	return $rp;
-}
-
-sub packet {
-	my $self	= shift;
-	return $self->{PACKET};
 }
 
 sub receive_reply {
