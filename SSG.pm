@@ -1,5 +1,7 @@
 package Net::Radius::SSG;
 
+# $Revision: 24 $
+
 #use 5.008001;
 use strict;
 use warnings;
@@ -34,7 +36,7 @@ use AutoLoader qw(AUTOLOAD);
 	SSG_SERVICE_LOGOFF
 );
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 
 # Preloaded methods go here.
@@ -71,6 +73,10 @@ sub new {
 	if (!defined $dictionary) {
 		die "Please specify a dictionary file";
 	}
+	if ( ! -r $dictionary) {
+		die "Unable to read dictionary file: $dictionary";
+	}
+
 	$self->{DICTIONARY} = new Net::Radius::Dictionary($dictionary);
 
 	$self->{SOCKET} = &create_udp_handle($ssg_ip,$ssg_port);
