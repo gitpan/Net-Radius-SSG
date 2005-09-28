@@ -1,6 +1,6 @@
 package Net::Radius::SSG;
 
-# $Revision: 24 $
+# $Revision: 34 $
 
 #use 5.008001;
 use strict;
@@ -36,7 +36,7 @@ use AutoLoader qw(AUTOLOAD);
 	SSG_SERVICE_LOGOFF
 );
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 
 # Preloaded methods go here.
@@ -61,15 +61,15 @@ sub new {
 	if (!defined $ssg_ip) {
 		die "Please specify an IP for the SSG.";
 	}
-	$self->{SSG_IP}	= $ssg_ip;
+	$self->{'SSG_IP'}	= $ssg_ip;
 	if (!defined $ssg_port) {
 		die "Please specify a port for the SSG.";
 	}
-	$self->{SSG_PORT} = $ssg_port;
+	$self->{'SSG_PORT'} = $ssg_port;
 	if (!defined $secret) {
 		die "Please specify a shared secret for the SSG.";
 	}
-	$self->{SECRET} = $secret;
+	$self->{'SECRET'} = $secret;
 	if (!defined $dictionary) {
 		die "Please specify a dictionary file";
 	}
@@ -77,9 +77,9 @@ sub new {
 		die "Unable to read dictionary file: $dictionary";
 	}
 
-	$self->{DICTIONARY} = new Net::Radius::Dictionary($dictionary);
+	$self->{'DICTIONARY'} = new Net::Radius::Dictionary($dictionary);
 
-	$self->{SOCKET} = &create_udp_handle($ssg_ip,$ssg_port);
+	$self->{'SOCKET'} = &create_udp_handle($ssg_ip,$ssg_port);
 
 	bless $self,$class;
 	return $self;
@@ -159,7 +159,7 @@ sub account_logon {
 	$packet->set_code('Access-Request');
 	$packet->set_identifier(57);
 	$packet->set_attr('User-Name',$user_id);
-	$packet->set_password($password,SECRET);
+	$packet->set_password($password,$secret);
 	$packet->set_vsattr(VSA_CISCO,'Account-Info','S'.$user_ip);
 	$packet->set_vsattr(VSA_CISCO,'Command-Code', SSG_ACCOUNT_LOGON."$user_id");
 }

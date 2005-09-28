@@ -1,4 +1,4 @@
-Net/Radius/SSG version 0.01
+Net/Radius/SSG version 0.04
 ===========================
 
 Net::Radius::SSG is a module for communicating with a SSG enabled Cisco router.
@@ -11,8 +11,8 @@ attribute dictionary that has Cisco VSA (Vendor specfic attributes) is also
 required and an example dictionary is included.  Please refer to the Net::Radius
 package for more information on RADIUS dictionaries.
 
-This package is still experimental so please email me at c.myers@its.uq.edu.au
-with any comments or sugguestions (or bugfixes).
+This package is still experimental so please email me at 
+ssg@chrisandjo.com with any comments or sugguestions (or bugfixes).
 
 INSTALLATION
 
@@ -32,9 +32,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
-
-Copyright (C) 2004 Chris Myers
+Copyright (C) 2004,2005 Chris Myers
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
